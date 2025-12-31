@@ -15,9 +15,14 @@ export const validateUserRegistration = [
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters'),
   body('phone')
-    .optional()
+    .optional({ checkFalsy: true })
     .trim()
-    .isMobilePhone()
+    .custom((value) => {
+      if (!value || value === '') {
+        return true;
+      }
+      return /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/.test(value);
+    })
     .withMessage('Please provide a valid phone number')
 ];
 

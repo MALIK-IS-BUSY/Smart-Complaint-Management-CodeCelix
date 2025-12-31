@@ -19,16 +19,27 @@ const AdminComplaints = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [usersList, setUsersList] = useState([]);
   const [formData, setFormData] = useState({
     status: '',
     department: '',
-    staffName: '',
+    userId: '',
     adminResponse: ''
   });
 
   useEffect(() => {
     fetchComplaints();
+    fetchUsers();
   }, [filters]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await adminAPI.getAllUsers();
+      setUsersList(response.data.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
 
   const fetchComplaints = async () => {
     try {
@@ -61,12 +72,17 @@ const AdminComplaints = () => {
   };
 
   const handleAssign = async () => {
+    if (!formData.department) {
+      alert('Please select a department');
+      return;
+    }
     try {
       await adminAPI.assignComplaint(selectedComplaint._id, {
         department: formData.department,
-        staffName: formData.staffName
+        userId: formData.userId || null
       });
       setShowModal(false);
+      setFormData({ status: '', department: '', userId: '', adminResponse: '' });
       setSuccessMessage('Complaint assigned successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
       fetchComplaints();
@@ -103,12 +119,24 @@ const AdminComplaints = () => {
   const openModal = (complaint, type) => {
     setSelectedComplaint(complaint);
     setModalType(type);
-    setFormData({
-      status: complaint.status || '',
-      department: complaint.assignedTo?.department || '',
-      staffName: complaint.assignedTo?.staffName || '',
-      adminResponse: complaint.adminResponse || ''
-    });
+    
+    if (type === 'status') {
+      setFormData({ ...formData, status: complaint.status || '' });
+    } else if (type === 'assign') {
+      const assignedDepartment = complaint.assignedTo?.department || '';
+      const assignedStaffName = complaint.assignedTo?.staffName || '';
+      const assignedUser = usersList.find(u => u.name === assignedStaffName);
+      setFormData({ 
+        ...formData, 
+        department: assignedDepartment, 
+        userId: assignedUser?._id || '' 
+      });
+    } else if (type === 'respond') {
+      setFormData({ ...formData, adminResponse: complaint.adminResponse || '' });
+    } else {
+      setFormData({ status: '', department: '', userId: '', adminResponse: '' });
+    }
+    
     setShowModal(true);
   };
 
@@ -353,7 +381,7 @@ const AdminComplaints = () => {
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white"
                 >
                   <option value="Pending">Pending</option>
                   <option value="In-Progress">In-Progress</option>
@@ -372,7 +400,10 @@ const AdminComplaints = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                      setShowModal(false);
+                      setFormData({ status: '', department: '', userId: '', adminResponse: '' });
+                    }}
                     className="flex-1 py-3 bg-gray-300 text-gray-800 rounded-xl font-semibold hover:bg-gray-400 transition-all"
                   >
                     Cancel
@@ -383,20 +414,43 @@ const AdminComplaints = () => {
 
             {modalType === 'assign' && (
               <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Department"
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Staff Name"
-                  value={formData.staffName}
-                  onChange={(e) => setFormData({ ...formData, staffName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500"
-                />
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Department *</label>
+                  <select
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value, staffId: '' })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white"
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    <option value="Service">Service</option>
+                    <option value="Technical">Technical</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Billing">Billing</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Assign to Team Member (Optional)</label>
+                  <select
+                    value={formData.userId}
+                    onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white"
+                  >
+                    <option value="">Select Team Member</option>
+                    {usersList.length === 0 ? (
+                      <option value="" disabled>No registered users available</option>
+                    ) : (
+                      usersList.map((user) => (
+                        <option key={user._id} value={user._id}>
+                          {user.name} {user.email ? `(${user.email})` : ''}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                  <p className="text-sm text-gray-500 mt-1">Select a registered team member to assign this complaint</p>
+                </div>
                 <div className="flex gap-4">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -409,7 +463,10 @@ const AdminComplaints = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                      setShowModal(false);
+                      setFormData({ status: '', department: '', userId: '', adminResponse: '' });
+                    }}
                     className="flex-1 py-3 bg-gray-300 text-gray-800 rounded-xl font-semibold hover:bg-gray-400 transition-all"
                   >
                     Cancel
@@ -439,7 +496,10 @@ const AdminComplaints = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                      setShowModal(false);
+                      setFormData({ status: '', department: '', userId: '', adminResponse: '' });
+                    }}
                     className="flex-1 py-3 bg-gray-300 text-gray-800 rounded-xl font-semibold hover:bg-gray-400 transition-all"
                   >
                     Cancel

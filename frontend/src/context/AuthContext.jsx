@@ -54,14 +54,17 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.register(userData);
       const { data } = response.data;
+      localStorage.removeItem('admin');
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
+      setAdmin(null);
       setUser(data);
       return { success: true, data };
     } catch (error) {
+      const errorMessage = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Registration failed';
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed'
+        message: errorMessage
       };
     }
   };

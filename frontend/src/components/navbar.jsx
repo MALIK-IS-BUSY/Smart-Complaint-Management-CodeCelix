@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaHome, FaUser, FaArrowRight, FaSignOutAlt, FaTachometerAlt, FaClipboardList, FaChartBar } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  FaBars, 
+  FaTimes, 
+  FaHome, 
+  FaUser, 
+  FaArrowRight, 
+  FaSignOutAlt, 
+  FaTachometerAlt, 
+  FaClipboardList, 
+  FaChartBar,
+  FaRocket,
+  FaShieldAlt
+} from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
@@ -17,161 +30,294 @@ const Navbar = () => {
   const navLinks = isAuthenticated
     ? isAdmin
       ? [
-          { name: 'Dashboard', path: '/admin/dashboard', icon: <FaTachometerAlt className="mr-2" /> },
-          { name: 'Complaints', path: '/admin/complaints', icon: <FaClipboardList className="mr-2" /> },
-          { name: 'Analytics', path: '/admin/analytics', icon: <FaChartBar className="mr-2" /> }
+          { name: 'Dashboard', path: '/admin/dashboard', icon: <FaTachometerAlt /> },
+          { name: 'Complaints', path: '/admin/complaints', icon: <FaClipboardList /> },
+          { name: 'Analytics', path: '/admin/analytics', icon: <FaChartBar /> }
         ]
       : [
-          { name: 'Home', path: '/', icon: <FaHome className="mr-2" /> },
-          { name: 'Dashboard', path: '/dashboard', icon: <FaTachometerAlt className="mr-2" /> }
+          { name: 'Home', path: '/', icon: <FaHome /> },
+          { name: 'Dashboard', path: '/dashboard', icon: <FaTachometerAlt /> }
         ]
     : [
-        { name: 'Home', path: '/', icon: <FaHome className="mr-2" /> },
-        { name: 'Login', path: '/login', icon: <FaUser className="mr-2" /> },
-        { name: 'Register', path: '/register', icon: <FaUser className="mr-2" /> }
+        { name: 'Home', path: '/', icon: <FaHome /> },
+        { name: 'Login', path: '/login', icon: <FaUser /> },
+        { name: 'Register', path: '/register', icon: <FaUser /> }
       ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-800 shadow-lg backdrop-blur-md">
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex flex-col group">
-          <div className="flex items-center">
-            <div className="h-10 w-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-              <span className="text-white font-bold text-xl">C</span>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white group-hover:text-pink-300 transition duration-300">CodeCelix</h1>
-              <span className="text-xs text-purple-200">Smart Feedback System</span>
-            </div>
-          </div>
-        </Link>
-
-        <nav className="hidden lg:flex items-center space-x-3">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.name}
-              to={link.path}
-              className={({ isActive }) =>
-                `flex items-center px-5 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md ${
-                  isActive 
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg scale-105' 
-                    : 'bg-white/10 text-purple-100 hover:bg-white/20 hover:text-pink-200 backdrop-blur-sm'
-                }`
-              }
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="sticky top-0 z-50 w-full"
+    >
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-800 backdrop-blur-xl"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            
+            <Link 
+              to="/" 
+              className="flex items-center group relative z-10"
             >
-              {link.icon}
-              {link.name}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="hidden lg:flex items-center space-x-4">
-          {isAuthenticated ? (
-            <>
-              <span className="text-white/80 text-sm">
-                {isAdmin ? admin?.username : user?.name}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="group flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border border-white/20"
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative"
               >
-                <FaSignOutAlt className="mr-2" />
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              {!navLinks.some(link => link.path === '/login') && (
-                <Link
-                  to="/login"
-                  className="group flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border border-white/20"
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                <div className="relative bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 p-3 rounded-2xl shadow-2xl transform group-hover:shadow-pink-500/50 transition-all duration-300">
+                  <FaRocket className="text-white text-2xl" />
+                </div>
+              </motion.div>
+              <div className="ml-4">
+                <motion.h1 
+                  className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent group-hover:from-pink-200 group-hover:via-purple-200 group-hover:to-indigo-200 transition-all duration-300 tracking-tight"
+                  whileHover={{ scale: 1.05 }}
                 >
-                  <FaUser className="mr-2" />
-                  Login
-                </Link>
-              )}
-              {!navLinks.some(link => link.path === '/register') && (
-                <Link
-                  to="/register"
-                  className="group flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border border-white/20"
+                  CodeCelix
+                </motion.h1>
+                <motion.p 
+                  className="text-xs md:text-sm text-purple-200/80 font-medium tracking-wide"
+                  initial={{ opacity: 0.8 }}
+                  animate={{ opacity: [0.8, 1, 0.8] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
-                  Register
-                  <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              )}
-            </>
-          )}
-        </div>
+                  Smart Complaint Management
+                </motion.p>
+              </div>
+            </Link>
 
-        <button
-          className="lg:hidden p-3 text-white bg-white/10 hover:bg-white/20 rounded-xl backdrop-blur-md transition-all duration-300"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
-        </button>
+            <nav className="hidden lg:flex items-center space-x-2">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.path}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <NavLink
+                    to={link.path}
+                    className={({ isActive }) =>
+                      `group relative flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 overflow-hidden ${
+                        isActive
+                          ? 'text-white'
+                          : 'text-purple-100 hover:text-white'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeNavLink"
+                            className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-xl shadow-lg shadow-pink-500/50"
+                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                        <motion.span 
+                          className={`relative z-10 flex items-center gap-2 ${
+                            isActive ? 'text-white' : 'group-hover:text-white'
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <span className="text-base">{link.icon}</span>
+                          <span>{link.name}</span>
+                        </motion.span>
+                      </>
+                    )}
+                  </NavLink>
+                </motion.div>
+              ))}
+            </nav>
+
+            <div className="hidden lg:flex items-center gap-4">
+              {isAuthenticated ? (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20"
+                  >
+                    {isAdmin && <FaShieldAlt className="text-pink-400" />}
+                    <span className="text-white/90 font-medium text-sm">
+                      {isAdmin ? admin?.username : user?.name}
+                    </span>
+                  </motion.div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                    className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl font-semibold text-sm text-white shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-all duration-300 overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-red-600 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <FaSignOutAlt className="relative z-10" />
+                    <span className="relative z-10">Logout</span>
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  {!navLinks.some(link => link.path === '/login') && (
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Link
+                        to="/login"
+                        className="group flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-xl font-semibold text-sm text-white border border-white/20 hover:bg-white/20 transition-all duration-300"
+                      >
+                        <FaUser />
+                        <span>Login</span>
+                      </Link>
+                    </motion.div>
+                  )}
+                  {!navLinks.some(link => link.path === '/register') && (
+                    <motion.button
+                      whileHover={{ scale: 1.05, boxShadow: '0 10px 30px rgba(236, 72, 153, 0.4)' }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => navigate('/register')}
+                      className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-xl font-semibold text-sm text-white shadow-lg shadow-pink-500/30 overflow-hidden"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      <span className="relative z-10">Get Started</span>
+                      <FaArrowRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+                  )}
+                </>
+              )}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="lg:hidden relative p-3 text-white bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-xl border border-white/20 transition-all duration-300 z-50"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <AnimatePresence mode="wait">
+                {isMenuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <FaTimes className="text-xl" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <FaBars className="text-xl" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
+        </div>
       </div>
 
-      {isMenuOpen && (
-        <div className="lg:hidden bg-gradient-to-b from-purple-900 via-indigo-900 to-purple-800 shadow-2xl backdrop-blur-md">
-          <div className="flex flex-col space-y-3 px-6 py-5">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.path}
-                onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center py-4 px-5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                    isActive 
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg' 
-                      : 'bg-white/10 text-purple-100 hover:bg-white/20 hover:text-pink-200'
-                  }`
-                }
-              >
-                {link.icon}
-                {link.name}
-              </NavLink>
-            ))}
-            {isAuthenticated ? (
-              <div className="pt-4 space-y-3 border-t border-purple-700/50 mt-2">
-                <div className="text-white/80 text-sm px-4 py-2">
-                  {isAdmin ? admin?.username : user?.name}
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center justify-center w-full py-3 px-4 text-center text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg"
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="lg:hidden relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-purple-900 via-indigo-900 to-purple-800 backdrop-blur-xl"></div>
+            <div className="absolute inset-0 bg-black/30"></div>
+            <div className="relative px-6 py-6 space-y-3">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.path}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  <FaSignOutAlt className="mr-2" />
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <div className="pt-4 space-y-3 border-t border-purple-700/50 mt-2">
-                {!navLinks.some(link => link.path === '/login') && (
-                  <Link
-                    to="/login"
+                  <NavLink
+                    to={link.path}
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center py-3 px-4 text-center text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-lg"
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 py-4 px-5 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-lg'
+                          : 'bg-white/10 text-purple-100 hover:bg-white/20 hover:text-white border border-white/10'
+                      }`
+                    }
                   >
-                    <FaUser className="mr-2" />
-                    Login
-                  </Link>
-                )}
-                {!navLinks.some(link => link.path === '/register') && (
-                  <Link
-                    to="/register"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center py-3 px-4 text-center text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-lg"
+                    <span className="text-lg">{link.icon}</span>
+                    <span>{link.name}</span>
+                  </NavLink>
+                </motion.div>
+              ))}
+              {isAuthenticated ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: navLinks.length * 0.1 }}
+                  className="pt-4 space-y-3 border-t border-white/20 mt-4"
+                >
+                  <div className="flex items-center gap-3 px-5 py-3 bg-white/10 rounded-xl border border-white/20">
+                    {isAdmin && <FaShieldAlt className="text-pink-400" />}
+                    <span className="text-white/90 font-medium text-sm">
+                      {isAdmin ? admin?.username : user?.name}
+                    </span>
+                  </div>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 py-4 px-5 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl font-semibold text-sm text-white shadow-lg"
                   >
-                    Register
-                    <FaArrowRight className="ml-2" />
-                  </Link>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </header>
+                    <FaSignOutAlt />
+                    <span>Logout</span>
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: navLinks.length * 0.1 }}
+                  className="pt-4 space-y-3 border-t border-white/20 mt-4"
+                >
+                  {!navLinks.some(link => link.path === '/login') && (
+                    <motion.div whileTap={{ scale: 0.95 }}>
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center justify-center gap-2 py-4 px-5 bg-white/10 rounded-xl font-semibold text-sm text-white border border-white/20 hover:bg-white/20 transition-all"
+                      >
+                        <FaUser />
+                        <span>Login</span>
+                      </Link>
+                    </motion.div>
+                  )}
+                  {!navLinks.some(link => link.path === '/register') && (
+                    <motion.button
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        navigate('/register');
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-4 px-5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-xl font-semibold text-sm text-white shadow-lg"
+                    >
+                      <span>Get Started</span>
+                      <FaArrowRight />
+                    </motion.button>
+                  )}
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 };
 

@@ -28,14 +28,16 @@ const AdminLogin = () => {
     try {
       const result = await adminLogin(formData.username, formData.password);
       if (result.success) {
-        navigate('/admin/dashboard', { replace: true });
+        setTimeout(() => {
+          navigate('/admin/dashboard', { replace: true });
+        }, 100);
       } else {
-        setError(result.message || 'Invalid credentials.');
+        setError(result.message || 'Invalid credentials. Please check your username and password.');
+        setLoading(false);
       }
     } catch (err) {
-      console.error(err);
-      setError('An error occurred. Please try again.');
-    } finally {
+      console.error('Admin login error:', err);
+      setError(err.response?.data?.message || 'An error occurred. Please try again.');
       setLoading(false);
     }
   };

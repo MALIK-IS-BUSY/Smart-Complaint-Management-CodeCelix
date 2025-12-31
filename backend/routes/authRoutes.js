@@ -19,9 +19,10 @@ const router = express.Router();
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    const firstError = errors.array()[0];
     return res.status(400).json({
       success: false,
-      message: 'Validation failed',
+      message: firstError.msg || 'Validation failed',
       errors: errors.array()
     });
   }

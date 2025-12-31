@@ -1,4 +1,5 @@
 import Complaint from '../models/Complaint.js';
+import User from '../models/User.js';
 
 export const getDashboardStats = async (req, res) => {
   try {
@@ -34,7 +35,14 @@ export const getDashboardStats = async (req, res) => {
 
 export const assignComplaint = async (req, res) => {
   try {
-    const { department, staffName } = req.body;
+    const { department, userId } = req.body;
+
+    if (!department) {
+      return res.status(400).json({
+        success: false,
+        message: 'Department is required'
+      });
+    }
 
     const complaint = await Complaint.findById(req.params.id);
 
@@ -45,8 +53,21 @@ export const assignComplaint = async (req, res) => {
       });
     }
 
+    let staffName = null;
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user) {
+        staffName = user.name;
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+    }
+
     complaint.assignedTo = {
-      department: department || complaint.assignedTo?.department,
+      department: department,
       staffName: staffName || complaint.assignedTo?.staffName
     };
 
@@ -62,6 +83,22 @@ export const assignComplaint = async (req, res) => {
     res.json({
       success: true,
       data: updatedComplaint
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, 'name email phone').sort({ name: 1 });
+
+    res.json({
+      success: true,
+      data: users
     });
   } catch (error) {
     res.status(500).json({

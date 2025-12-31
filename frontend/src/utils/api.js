@@ -62,12 +62,19 @@ export const adminAPI = {
   updateComplaint: (id, data) => api.put(`/admin/complaints/${id}`, data),
   deleteComplaint: (id) => api.delete(`/admin/complaints/${id}`),
   assignComplaint: (id, data) => api.post(`/admin/complaints/${id}/assign`, data),
-  respondToComplaint: (id, data) => api.post(`/admin/complaints/${id}/respond`, data)
+  respondToComplaint: (id, data) => api.post(`/admin/complaints/${id}/respond`, data),
+  getAllUsers: () => api.get('/admin/users')
 };
 
 export const analyticsAPI = {
+  getOverallStats: () => api.get('/analytics/overall-stats'),
   getCategoryStats: () => api.get('/analytics/category-stats'),
+  getDepartmentStats: () => api.get('/analytics/department-stats'),
+  getUserStats: () => api.get('/analytics/user-stats'),
+  getAssignedUserStats: () => api.get('/analytics/assigned-user-stats'),
+  getStatusBreakdown: () => api.get('/analytics/status-breakdown'),
   getMonthlyTrends: (year) => api.get('/analytics/monthly-trends', { params: { year } }),
+  getWeeklyTrends: (weeks) => api.get('/analytics/weekly-trends', { params: { weeks } }),
   getFrequentIssues: (limit) => api.get('/analytics/frequent-issues', { params: { limit } }),
   getPriorityStats: () => api.get('/analytics/priority-stats')
 };

@@ -2,7 +2,8 @@ import express from 'express';
 import {
   getDashboardStats,
   assignComplaint,
-  respondToComplaint
+  respondToComplaint,
+  getAllUsers
 } from '../controllers/adminController.js';
 import {
   getAllComplaints,
@@ -35,6 +36,7 @@ router.put('/complaints/:id', adminProtect, validateComplaintUpdate, handleValid
 router.delete('/complaints/:id', adminProtect, deleteComplaint);
 router.post('/complaints/:id/assign', adminProtect, assignComplaint);
 router.post('/complaints/:id/respond', adminProtect, respondToComplaint);
+router.get('/users', adminProtect, getAllUsers);
 
 export default router;
 

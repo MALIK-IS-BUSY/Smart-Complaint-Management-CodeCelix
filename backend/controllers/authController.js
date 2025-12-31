@@ -6,6 +6,13 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, and password are required'
+      });
+    }
+
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -15,12 +22,14 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    const user = await User.create({
+    const userData = {
       name,
       email,
       password,
-      phone
-    });
+      ...(phone && phone.trim() !== '' && { phone: phone.trim() })
+    };
+
+    const user = await User.create(userData);
 
     res.status(201).json({
       success: true,
@@ -28,14 +37,21 @@ export const registerUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        phone: user.phone,
+        phone: user.phone || '',
         token: generateToken(user._id)
       }
     });
   } catch (error) {
+    console.error('Registration error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
+    }
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message || 'Registration failed. Please try again.'
     });
   }
 };

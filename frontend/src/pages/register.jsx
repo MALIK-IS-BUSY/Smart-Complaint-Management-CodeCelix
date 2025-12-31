@@ -39,14 +39,24 @@ const Register = () => {
     setLoading(true);
 
     const { confirmPassword, ...registerData } = formData;
-    const result = await register(registerData);
+    
+    const cleanRegisterData = {
+      name: registerData.name.trim(),
+      email: registerData.email.trim(),
+      password: registerData.password,
+      ...(registerData.phone && registerData.phone.trim() !== '' && { phone: registerData.phone.trim() })
+    };
+    
+    const result = await register(cleanRegisterData);
     
     if (result.success) {
-      navigate('/dashboard');
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true });
+      }, 100);
     } else {
-      setError(result.message);
+      setError(result.message || 'Registration failed. Please try again.');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
