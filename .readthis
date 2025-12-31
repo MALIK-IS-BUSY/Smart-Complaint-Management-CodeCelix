@@ -1,0 +1,13 @@
+//credentials for admin are:
+username: admin
+password: admin123
+
+for creating new admin:
+
+cd backend 
+npm run create-admin username email password
+
+replace username, email, password with yours!
+
+
+The entire project is working, running, bakend, controllers, router, mongodb responsive design!

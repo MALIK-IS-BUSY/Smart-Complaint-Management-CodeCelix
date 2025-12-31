@@ -1,0 +1,7 @@
+//create a .env file in backend, here are its content:
+
+PORT=5000
+MONGODB_URI=mongodb+srv://malikabdullah0120:wKtiIh40BbYXi6VV@cluster0.qrben47.mongodb.net/?appName=Cluster0
+JWT_SECRET=8d01d72b3c67ebb5d9dd1b5a37a5cfe8
+JWT_EXPIRE=7d
+NODE_ENV=development
